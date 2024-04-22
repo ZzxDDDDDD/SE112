@@ -1,0 +1,28 @@
+services:
+  db:  # 服务名称
+    image: mysql:latest  # 使用最新版本的mysql镜像
+    command: --default-authentication-plugin=mysql_native_password  # 设置默认的认证插件
+    restart: always
+    environment:  # 环境变量，用于配置mysql
+      MYSQL_ROOT_PASSWORD: test8888  # 设置root用户的密码
+      MYSQL_DATABASE: test  # 创建一个数据库
+      MYSQL_USER: user  # 创建一个用户
+      MYSQL_PASSWORD: password  # 设置用户的密码
+    ports:
+      - "127.0.0.1:3306:3306"  # 将容器的3306端口映射到宿主机的3306端口
+    volumes:
+      - my-db:/var/lib/mysql  # 持久化存储数据
+
+  phpmyadmin2:  # phpMyAdmin服务
+    image: phpmyadmin/phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: test8888
+    ports:
+      - "9190:80"  # 将宿主机的9090端口映射到容器的80端口
+    depends_on:
+      - db  # 确保在phpMyAdmin启动前数据库已经运行
+volumes:
+  my-db:  # 定义卷的名称
