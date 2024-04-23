@@ -36,15 +36,14 @@ const Users = () => {
 
     return (
         <article>
-            <h2>Users List</h2>
             {users.length > 0 ? (
                 <ul>
                     {users.map((user, i) => (
                         <li key={i}>
-                            <p>Username: {user.user_name}</p>
-                            <p>First Name: {user.first_name || 'N/A'}</p>
-                            <p>Last Name: {user.last_name || 'N/A'}</p>
-                            <p>Created At: {new Date(user.created_at).toLocaleString()}</p>
+                            <p>Email: {user.email}</p>
+                            <p>Vaccination Status: {user.first_name === 'injected' ? '✓' : user.first_name === 'notinject' ? '✗' : 'N/A'}</p>
+                            <p>Full Name: {user.last_name || 'N/A'}</p>
+                            <p>Vaccinated On: {new Date(user.created_at).toLocaleString()}</p>
                         </li>
                     ))}
                 </ul>

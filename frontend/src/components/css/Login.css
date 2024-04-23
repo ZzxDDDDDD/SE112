@@ -1,0 +1,108 @@
+/* 定义CSS变量 */
+:root {
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+    --background-color: #f8f9fa;
+    --text-color: #212529;
+    --box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* 设置背景图片 */
+  body {
+    background-image: url('../pics/vancouver.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* 登录框样式 */
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .login-box {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--box-shadow);
+    max-width: 400px;
+    width: 100%;
+  }
+  
+  .login-title {
+    text-align: center;
+    color: var(--primary-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    color: var(--primary-color);
+  }
+  
+  .form-input {
+    padding: 0.5rem;
+    border: 1px solid var(--secondary-color);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+  }
+  
+  .login-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .login-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .register-link {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--text-color);
+  }
+  
+  .register-link-text {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  
+  .register-link-text:hover {
+    color: black; /* 当鼠标移动到"Sign Up"链接上时,字体颜色变为黑色 */
+  }
+  
+  /* 错误消息样式 */
+  .errmsg {
+    color: #dc3545;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  .offscreen {
+    display: none;
+  }
+  

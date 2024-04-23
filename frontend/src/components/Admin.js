@@ -4,12 +4,12 @@ import Users from './Users';
 const Admin = () => {
     return (
         <section>
-            <h1>Admins Page</h1>
+            <h1>Personal</h1>
             <br />
             <Users />
             <br />
             <div className="flexGrow">
-                <Link to="/">Home</Link>
+                <Link to="/linkpage">Home</Link>
             </div>
         </section>
     )

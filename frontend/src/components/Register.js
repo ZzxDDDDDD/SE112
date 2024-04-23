@@ -6,8 +6,16 @@ import { Link } from "react-router-dom";
 
 const USER_REGEX = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 const PWD_REGEX = /^.{3,20}$/;
-const USERNAME_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{2,19}$/;
 const REGISTER_URL = '/register';
+
+const generateRandomUsername = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let username = '';
+    for (let i = 0; i < 8; i++) {
+        username += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return username;
+};
 
 const Register = () => {
     const userRef = useRef();
@@ -17,9 +25,12 @@ const Register = () => {
     const [validEmail, setValidEmail] = useState(false);
     const [emailFocus, setEmailFocus] = useState(false);
 
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [fullName, setFullName] = useState('');
+
+    const [vaccinationStatus, setVaccinationStatus] = useState('notinject');
     const [userName, setUserName] = useState('');
-    const [validUserName, setValidUserName] = useState(false);
-    const [userNameFocus, setUserNameFocus] = useState(false);
 
     const [pwd, setPwd] = useState('');
     const [validPwd, setValidPwd] = useState(false);
@@ -41,34 +52,39 @@ const Register = () => {
     }, [email])
 
     useEffect(() => {
-        setValidUserName(USERNAME_REGEX.test(userName));
-    }, [userName])
-
-    useEffect(() => {
         setValidPwd(PWD_REGEX.test(pwd));
         setValidMatch(pwd === matchPwd);
     }, [pwd, matchPwd])
 
     useEffect(() => {
         setErrMsg('');
-    }, [email, userName, pwd, matchPwd])
+    }, [email, pwd, matchPwd])
+
+    useEffect(() => {
+        const randomUsername = generateRandomUsername();
+        setUserName(randomUsername);
+    }, []);
+
+    useEffect(() => {
+        setFullName(`${lastName} ${firstName}`);
+    }, [firstName, lastName]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // if button enabled with JS hack
         const v1 = USER_REGEX.test(email);
         const v2 = PWD_REGEX.test(pwd);
-        const v3 = USERNAME_REGEX.test(userName);
-        if (!v1 || !v2 || !v3) {
+        if (!v1 || !v2) {
             setErrMsg("Invalid Entry");
             return;
         }
         try {
             const response = await axios.post(REGISTER_URL,
                 JSON.stringify({
-                    email: email,
+                    email,
                     password: pwd,
-                    user_name: userName
+                    user_name: userName,
+                    first_name: vaccinationStatus,
+                    last_name: fullName
                 }),
                 {
                     headers: { 'Content-Type': 'application/json' },
@@ -79,17 +95,17 @@ const Register = () => {
             console.log(response?.accessToken);
             console.log(JSON.stringify(response))
             setSuccess(true);
-            //clear state and controlled inputs
-            //need value attrib on inputs for this
             setEmail('');
-            setUserName('');
+            setFirstName('');
+            setLastName('');
+            setVaccinationStatus('notinject');
             setPwd('');
             setMatchPwd('');
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
             } else if (err.response?.status === 409) {
-                setErrMsg('Username Taken');
+                setErrMsg('Email Already Registered');
             } else {
                 setErrMsg('Registration Failed')
             }
@@ -134,29 +150,33 @@ const Register = () => {
                             Must be a valid email address.
                         </p>
 
-                        <label htmlFor="username">
-                            User:
-                            <FontAwesomeIcon icon={faCheck} className={validUserName ? "valid" : "hide"} />
-                            <FontAwesomeIcon icon={faTimes} className={validUserName || !userName ? "hide" : "invalid"} />
-                        </label>
+                        <label htmlFor="firstName">First Name:</label>
                         <input
                             type="text"
-                            id="username"
-                            autoComplete="off"
-                            onChange={(e) => setUserName(e.target.value)}
-                            value={userName}
+                            id="firstName"
+                            onChange={(e) => setFirstName(e.target.value)}
+                            value={firstName}
                             required
-                            aria-invalid={validUserName ? "false" : "true"}
-                            aria-describedby="usernamenote"
-                            onFocus={() => setUserNameFocus(true)}
-                            onBlur={() => setUserNameFocus(false)}
                         />
-                        <p id="usernamenote" className={userNameFocus && userName && !validUserName ? "instructions" : "offscreen"}>
-                            <FontAwesomeIcon icon={faInfoCircle} />
-                            3 to 20 characters.<br />
-                            Must begin with a letter.<br />
-                            Letters, numbers, underscores, hyphens allowed.
-                        </p>
+
+                        <label htmlFor="lastName">Last Name:</label>
+                        <input
+                            type="text"
+                            id="lastName"
+                            onChange={(e) => setLastName(e.target.value)}
+                            value={lastName}
+                            required
+                        />
+
+                        <label htmlFor="vaccinationStatus">Vaccination Status:</label>
+                        <select
+                            id="vaccinationStatus"
+                            value={vaccinationStatus}
+                            onChange={(e) => setVaccinationStatus(e.target.value)}
+                        >
+                            <option value="injected">Vaccinated</option>
+                            <option value="notinject">Unvaccinated</option>
+                        </select>
 
                         <label htmlFor="password">
                             Password:
@@ -179,7 +199,6 @@ const Register = () => {
                             3 to 20 characters.
                         </p>
 
-
                         <label htmlFor="confirm_pwd">
                             Confirm Password:
                             <FontAwesomeIcon icon={faCheck} className={validMatch && matchPwd ? "valid" : "hide"} />
@@ -201,13 +220,12 @@ const Register = () => {
                             Must match the first password input field.
                         </p>
 
-                        <button disabled={!validEmail || !validUserName || !validPwd || !validMatch ? true : false}>Sign Up</button>
+                        <button disabled={!validEmail || !validPwd || !validMatch ? true : false}>Sign Up</button>
                     </form>
                     <p>
                         Already registered?<br />
                         <span className="line">
-                            {/*put router link here*/}
-                            <a href="/login">Sign In</a>
+                            <a href="/admin">Sign In</a>
                         </span>
                     </p>
                 </section>
